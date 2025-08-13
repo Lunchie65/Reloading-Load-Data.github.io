@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reloading Load Data</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap');
+
+  body {
+    background: url('https://upload.wikimedia.org/wikipedia/commons/6/6f/Coyote_walking_in_the_snow.jpg') no-repeat center center fixed,
+                linear-gradient(180deg, #2b2b2b, #1a1a1a);
+    background-size: cover;
+    color: #f2f2f2;
+    font-family: 'Roboto Slab', serif;
+    margin: 0;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #f4e3c1;
+    text-shadow: 1px 1px 2px #000;
+    border-bottom: 3px solid #c28f50;
+    padding-bottom: 0.5rem;
+  }
+
+  label {
+    font-weight: bold;
+    margin: 0.8rem 0 0.3rem;
+    display: block;
+    color: #f4e3c1;
+    text-shadow: 1px 1px 2px #000;
+  }
+
+  select {
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #c28f50;
+    outline: none;
+    width: 300px;
+    background: rgba(20, 20, 20, 0.9);
+    color: #fff;
+    transition: background 0.3s ease;
+    cursor: pointer;
+  }
+  select:hover, select:focus {
+    background: rgba(40, 40, 40, 0.95);
+  }
+
+  #output {
+    margin-top: 2rem;
+    background: rgba(20, 20, 20, 0.85);
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    width: 90vw;
+    max-width: 700px;
+    border: 1px solid #c28f50;
+    box-shadow: 0 0 10px rgba(0,0,0,0.6);
+  }
+
+  .output-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .output-row:last-child {
+    border-bottom: none;
+  }
+
+  .output-label {
+    font-weight: 700;
+    color: #d6b37f;
+  }
+
+  .output-value {
+    max-width: 60%;
+    text-align: right;
+    color: #fff;
+  }
+
+  footer {
+    margin-top: auto;
+    padding-top: 2rem;
+    font-size: 0.85rem;
+    color: #d0d0d0;
+    text-shadow: 1px 1px 2px #000;
+  }
+</style>
+</head>
+<body>
+
+<h1>Reloading Load Data</h1>
+
+<label for="caliperSelect">Select Rifle Caliper</label>
+<select id="caliperSelect" aria-label="Select Rifle Caliper">
+  <option value="" disabled selected>-- Choose Caliper --</option>
+</select>
+
+<label for="bulletSelect" style="margin-top:1.5rem;">Select Bullet Weight</label>
+<select id="bulletSelect" aria-label="Select Bullet Weight" disabled>
+  <option value="" disabled selected>-- Choose Bullet Weight --</option>
+</select>
+
+<div id="output" aria-live="polite" role="region" aria-label="Reloading Information">
+  <p style="color:#777; text-align:center;">Select a caliper and bullet weight to see details here.</p>
+</div>
+
+<script>
+  // Data for calipers and bullet weights with detailed info
+  const data = {
+    "6.5 Creedmoor": {
+      bullets: {
+        "100 gr": {
+          Ballistics: ".226; G7",
+          Bullet: "Hornady, ELD-VT",
+          Powder: "Hodgon, Varget",
+          Velocity: "fps",
+          Charge: "00.0 gr",
+          Headspace: "\"",
+          Ogive: "\"",
+          CaseTrimLength: "\"",
+          Use: "Predator Hunting, Small Game"
+        },
+
+        "123 gr": {
+          Ballistics: ".510; G1",
+          Bullet: "Hornady, SST",
+          Powder: "Hodgon, Varget",
+          Velocity: "2700 fps",
+          Charge: "36.0 gr",
+          Headspace: "1.5375\"",
+          Ogive: "2.188\"",
+          CaseTrimLength: "1.910\"",
+          Use: "Predator Hunting, Small Game"
+        },
+        "140 gr": {
+          Ballistics: ".326; G7",
+          Bullet: "Hornady, ELD Match",
+          Powder: "Hodgon, Varget",
+          Velocity: "2450 fps",
+          Charge: "34.0 gr",
+          Headspace: "1.537\"",
+          Ogive: "2.181\"",
+          CaseTrimLength: "1.910\"",
+          Use: "Percision long-range Shooting, Predator Hunting"
+        }
+      }
+    },
+    "6.5 Grendel": {
+      bullets: {
+        "123 gr SST": {
+          Ballistics: ".506; G1",
+          Bullet: "Hornady, SST",
+          Powder: "Hodgon, CFE 223",
+          Velocity: " fps",
+          Charge: "00.0 gr",
+          Headspace: "1.2175\"",
+          Ogive: "2\"",
+          CaseTrimLength: "\"",
+          Use: "Predator Hunting"
+        },
+         "123 gr ELD Match": {
+          Ballistics: ".510; G1",
+          Bullet: "Hornady, ELD Match",
+          Powder: "Hodgon, Varget",
+          Velocity: " fps",
+          Charge: "00.0 gr",
+          Headspace: "1.2175\"",
+          Ogive: "1\"",
+          CaseTrimLength: "\"",
+          Use: "Predator Hunting"
+        },
+        "100 gr": {
+          Ballistics: ";",
+          Bullet: "Hornady, SST",
+          Powder: "",
+          Velocity: " fps",
+          Charge: "00.0 gr",
+          Headspace: "1.2175\"",
+          Ogive: "\"",
+          CaseTrimLength: "\"",
+          Use: "Predator Hunting"
+        }
+      }
+    },
+    "22-250": {
+      bullets: {
+        "55 gr": {
+         Ballistics: " fps;",
+          Bullet: "",
+          Powder: "",
+          Velocity: " fps",
+          Charge: "00.0 gr",
+          Headspace: "\"",
+          Ogive: "\"",
+          CaseTrimLength: "\"",
+          Use: "Predator Hunting"
+        }
+        }
+      },
+    "223 Remington": {
+      bullets: {
+        "55 gr": {
+         Ballistics: " fps;",
+          Bullet: "",
+          Powder: "",
+          Velocity: " fps",
+          Charge: "00.0 gr",
+          Headspace: "\"",
+          Ogive: "\"",
+          CaseTrimLength: "\"",
+          Use: "Target Shooting, Small Game"
+        }
+        }
+      },
+    " 243": {
+      bullets: {
+        "95 gr": {
+         Ballistics: " fps;",
+          Bullet: "",
+          Powder: "",
+          Velocity: " fps",
+          Charge: "00.0 gr",
+          Headspace: "\"",
+          Ogive: "\"",
+          CaseTrimLength: "\"",
+          Use: "Predator Hunting"
+        }
+        }
+      },
+      "30-06": {
+      bullets: {
+        "165 gr": {
+         Ballistics: " fps;",
+          Bullet: "",
+          Powder: "",
+          Velocity: " fps",
+          Charge: "00.0 gr",
+          Headspace: "\"",
+          Ogive: "\"",
+          CaseTrimLength: "\"",
+          Use: "Big Game"
+        }
+        }
+      }
+  };
+
+  const caliperSelect = document.getElementById('caliperSelect');
+  const bulletSelect = document.getElementById('bulletSelect');
+  const outputDiv = document.getElementById('output');
+
+  // Populate caliper dropdown
+  Object.keys(data).forEach(caliper => {
+    const option = document.createElement('option');
+    option.value = caliper;
+    option.textContent = caliper;
+    caliperSelect.appendChild(option);
+  });
+
+  // When caliper changes, populate bullet weights
+  caliperSelect.addEventListener('change', () => {
+    const selectedCaliper = caliperSelect.value;
+    bulletSelect.innerHTML = '<option value="" disabled selected>-- Choose Bullet Weight --</option>';
+
+    if (selectedCaliper && data[selectedCaliper]) {
+      Object.keys(data[selectedCaliper].bullets).forEach(weight => {
+        const option = document.createElement('option');
+        option.value = weight;
+        option.textContent = weight;
+        bulletSelect.appendChild(option);
+      });
+      bulletSelect.disabled = false;
+      outputDiv.innerHTML = '<p style="color:#777; text-align:center;">Select a bullet weight to see details here.</p>';
+    } else {
+      bulletSelect.disabled = true;
+      outputDiv.innerHTML = '<p style="color:#777; text-align:center;">Select a caliper and bullet weight to see details here.</p>';
+    }
+  });
+
+  // When bullet weight changes, show output
+  bulletSelect.addEventListener('change', () => {
+    const caliper = caliperSelect.value;
+    const weight = bulletSelect.value;
+
+    if (caliper && weight && data[caliper] && data[caliper].bullets[weight]) {
+      const info = data[caliper].bullets[weight];
+
+      outputDiv.innerHTML = `
+        <div class="output-row"><div class="output-label">Caliper:</div><div class="output-value">${caliper}</div></div>
+        <div class="output-row"><div class="output-label">Bullet Weight:</div><div class="output-value">${weight}</div></div>
+        <div class="output-row"><div class="output-label">Bullet:</div><div class="output-value">${info.Bullet}</div></div>
+        <div class="output-row"><div class="output-label">Ballistics:</div><div class="output-value">${info.Ballistics}</div></div>
+        <div class="output-row"><div class="output-label">Powder:</div><div class="output-value">${info.Powder}</div></div>
+        <div class="output-row"><div class="output-label">Charge:</div><div class="output-value">${info.Charge}</div></div>
+        <div class="output-row"><div class="output-label">Velocity:</div><div class="output-value">${info.Velocity}</div></div>
+        <div class="output-row"><div class="output-label">Headspace:</div><div class="output-value">${info.Headspace}</div></div>
+        <div class="output-row"><div class="output-label">Ogive:</div><div class="output-value">${info.Ogive}</div></div>
+        <div class="output-row"><div class="output-label">Case Trim Length:</div><div class="output-value">${info.CaseTrimLength}</div></div>
+        <div class="output-row"><div class="output-label">Use:</div><div class="output-value">${info.Use}</div></div>
+      `;
+    } else {
+      outputDiv.innerHTML = '<p style="color:#777; text-align:center;">Select a caliper and bullet weight to see details here.</p>';
+    }
+  });
+</script>
+
+<footer>
+  &copy; Reloading Data
+</footer>
+
+</body>
+</html>
